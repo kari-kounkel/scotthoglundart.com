@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   supabase, signIn, signOut, getSession,
+  resetPassword, updatePassword,
   fetchAllArtworks, createArtwork, updateArtwork, deleteArtwork as deleteArtworkApi,
   uploadImage, getImageUrl
 } from '../lib/supabase'
@@ -29,12 +30,27 @@ export default function Admin() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loginError, setLoginError] = useState('')
+  const [showForgot, setShowForgot] = useState(false)
+  const [forgotSent, setForgotSent] = useState(false)
+  const [showResetPassword, setShowResetPassword] = useState(false)
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
 
   useEffect(() => {
     checkSession()
+
+    // Check if this is a password reset redirect
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('reset') === 'true') {
+      setShowResetPassword(true)
+    }
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
-      if (session) loadArtworks()
+      if (_event === 'PASSWORD_RECOVERY') {
+        setShowResetPassword(true)
+      }
+      if (session && !showResetPassword) loadArtworks()
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -61,6 +77,46 @@ export default function Admin() {
     try {
       await signIn(email, password)
       toast('Welcome back, Scott ✦')
+    } catch (err) {
+      setLoginError(err.message)
+    }
+  }
+
+  async function handleForgotPassword(e) {
+    e.preventDefault()
+    setLoginError('')
+    if (!email) {
+      setLoginError('Enter your email address first')
+      return
+    }
+    try {
+      await resetPassword(email)
+      setForgotSent(true)
+      toast('Reset link sent — check your email')
+    } catch (err) {
+      setLoginError(err.message)
+    }
+  }
+
+  async function handleResetPassword(e) {
+    e.preventDefault()
+    setLoginError('')
+    if (newPassword !== confirmPassword) {
+      setLoginError('Passwords don\'t match')
+      return
+    }
+    if (newPassword.length < 6) {
+      setLoginError('Password must be at least 6 characters')
+      return
+    }
+    try {
+      await updatePassword(newPassword)
+      setShowResetPassword(false)
+      setNewPassword('')
+      setConfirmPassword('')
+      toast('✦ Password updated successfully')
+      // Clean up URL
+      window.history.replaceState({}, '', '/admin')
     } catch (err) {
       setLoginError(err.message)
     }
@@ -200,6 +256,59 @@ export default function Admin() {
     return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: 'var(--stone)' }}>Loading...</div>
   }
 
+  // ─── RESET PASSWORD SCREEN (after clicking email link) ───
+  if (showResetPassword) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2rem'
+      }}>
+        <div style={{
+          background: 'white',
+          padding: '3rem',
+          borderRadius: '4px',
+          boxShadow: '0 4px 20px var(--shadow)',
+          width: '100%',
+          maxWidth: '400px'
+        }}>
+          <h2 style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: '1.8rem',
+            fontWeight: 400,
+            marginBottom: '0.3rem'
+          }}>
+            Set New Password
+          </h2>
+          <p style={{ fontSize: '0.8rem', color: 'var(--stone)', marginBottom: '2rem', letterSpacing: '0.05em' }}>
+            Choose a new password for your account
+          </p>
+
+          {loginError && (
+            <p style={{ color: '#c0392b', fontSize: '0.85rem', marginBottom: '1rem', padding: '0.6rem', background: '#fdecea', borderRadius: '3px' }}>
+              {loginError}
+            </p>
+          )}
+
+          <form onSubmit={handleResetPassword}>
+            <div className="form-group">
+              <label>New Password</label>
+              <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required placeholder="••••••••" />
+            </div>
+            <div className="form-group">
+              <label>Confirm Password</label>
+              <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required placeholder="••••••••" />
+            </div>
+            <button type="submit" className="btn-primary">Update Password</button>
+          </form>
+        </div>
+        <Toast />
+      </div>
+    )
+  }
+
   // ─── LOGIN SCREEN ───
   if (!session) {
     return (
@@ -224,10 +333,15 @@ export default function Admin() {
             fontWeight: 400,
             marginBottom: '0.3rem'
           }}>
-            Admin Login
+            {showForgot ? 'Reset Password' : 'Admin Login'}
           </h2>
           <p style={{ fontSize: '0.8rem', color: 'var(--stone)', marginBottom: '2rem', letterSpacing: '0.05em' }}>
-            Sign in to manage the gallery
+            {showForgot
+              ? forgotSent
+                ? 'Check your email for a reset link'
+                : 'Enter your email and we\'ll send a reset link'
+              : 'Sign in to manage the gallery'
+            }
           </p>
 
           {loginError && (
@@ -236,22 +350,81 @@ export default function Admin() {
             </p>
           )}
 
-          <form onSubmit={handleLogin}>
-            <div className="form-group">
-              <label>Email</label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="scott@email.com" />
-            </div>
-            <div className="form-group">
-              <label>Password</label>
-              <input type="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" />
-            </div>
-            <button type="submit" className="btn-primary">Sign In</button>
-          </form>
+          {showForgot ? (
+            forgotSent ? (
+              <div style={{ textAlign: 'center' }}>
+                <p style={{ fontSize: '2rem', marginBottom: '1rem' }}>✉️</p>
+                <p style={{ fontSize: '0.9rem', color: 'var(--bark-light)', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                  If that email is in our system, you'll receive a reset link shortly. Check your spam folder too.
+                </p>
+                <button
+                  onClick={() => { setShowForgot(false); setForgotSent(false); setLoginError('') }}
+                  className="btn-primary"
+                >
+                  Back to Login
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleForgotPassword}>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="scott@email.com" />
+                </div>
+                <button type="submit" className="btn-primary">Send Reset Link</button>
+                <button
+                  type="button"
+                  onClick={() => { setShowForgot(false); setLoginError('') }}
+                  style={{
+                    marginTop: '1rem',
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--stone)',
+                    fontSize: '0.8rem',
+                    cursor: 'pointer',
+                    width: '100%',
+                    textAlign: 'center'
+                  }}
+                >
+                  ← Back to login
+                </button>
+              </form>
+            )
+          ) : (
+            <>
+              <form onSubmit={handleLogin}>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="scott@email.com" />
+                </div>
+                <div className="form-group">
+                  <label>Password</label>
+                  <input type="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" />
+                </div>
+                <button type="submit" className="btn-primary">Sign In</button>
+              </form>
+
+              <button
+                onClick={() => { setShowForgot(true); setLoginError('') }}
+                style={{
+                  marginTop: '1rem',
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--clay)',
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                  width: '100%',
+                  textAlign: 'center'
+                }}
+              >
+                Forgot password?
+              </button>
+            </>
+          )}
 
           <button
             onClick={() => navigate('/')}
             style={{
-              marginTop: '1.5rem',
+              marginTop: '1rem',
               background: 'none',
               border: 'none',
               color: 'var(--stone)',

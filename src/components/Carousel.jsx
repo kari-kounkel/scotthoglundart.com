@@ -61,7 +61,7 @@ function ArtCard({ art, onClick }) {
       className="art-card"
       onClick={onClick}
       style={{
-        flex: '0 0 340px',
+        flex: '0 0 min(340px, 80vw)',
         scrollSnapAlign: 'center',
         background: 'white',
         borderRadius: '3px',

@@ -30,7 +30,7 @@ export default function App() {
       <Navbar />
 
       {/* HERO / GALLERY */}
-      <section id="gallery" style={{
+      <section id="gallery" className="hero-section" style={{
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
@@ -40,7 +40,7 @@ export default function App() {
       }}>
         <h1 style={{
           fontFamily: "'Cormorant Garamond', serif",
-          fontSize: 'clamp(2.5rem, 6vw, 5rem)',
+          fontSize: 'clamp(2rem, 6vw, 5rem)',
           fontWeight: 300,
           textAlign: 'center',
           marginBottom: '0.5rem',
@@ -50,13 +50,14 @@ export default function App() {
           Original Works
         </h1>
         <p style={{
-          fontSize: '0.9rem',
+          fontSize: 'clamp(0.7rem, 2vw, 0.9rem)',
           color: 'var(--stone)',
-          letterSpacing: '0.2em',
+          letterSpacing: '0.15em',
           textTransform: 'uppercase',
           fontWeight: 300,
-          marginBottom: '3rem',
-          animation: 'fadeUp 1s ease 0.5s both'
+          marginBottom: '2rem',
+          animation: 'fadeUp 1s ease 0.5s both',
+          textAlign: 'center'
         }}>
           Paintings · Drawings · Prints
         </p>
@@ -71,7 +72,7 @@ export default function App() {
       </section>
 
       {/* ABOUT */}
-      <section id="about" style={{
+      <section id="about" className="about-section" style={{
         padding: '6rem 3rem',
         maxWidth: '900px',
         margin: '0 auto',
@@ -98,7 +99,7 @@ export default function App() {
         <div>
           <h2 style={{
             fontFamily: "'Cormorant Garamond', serif",
-            fontSize: '2.2rem',
+            fontSize: 'clamp(1.6rem, 4vw, 2.2rem)',
             fontWeight: 300,
             marginBottom: '1.5rem',
             lineHeight: 1.2
@@ -115,14 +116,14 @@ export default function App() {
       </section>
 
       {/* CONTACT */}
-      <section id="contact" style={{
+      <section id="contact" className="contact-section" style={{
         padding: '6rem 3rem',
         textAlign: 'center',
         background: 'var(--warm-cream)'
       }}>
         <h2 style={{
           fontFamily: "'Cormorant Garamond', serif",
-          fontSize: '2.5rem',
+          fontSize: 'clamp(1.8rem, 5vw, 2.5rem)',
           fontWeight: 300,
           marginBottom: '1rem'
         }}>
@@ -139,6 +140,7 @@ export default function App() {
           Originals and prints coming soon. For inquiries about available work, commissions, or to say hello:
         </p>
         <a
+          className="contact-email"
           href="mailto:scott@scotthoglundart.com"
           style={{
             fontFamily: "'Cormorant Garamond', serif",

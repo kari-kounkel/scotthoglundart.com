@@ -145,3 +145,34 @@ a { color: inherit; text-decoration: none; }
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  .about-section {
+    grid-template-columns: 1fr !important;
+    padding: 3rem 1.5rem !important;
+    gap: 2rem !important;
+  }
+
+  .hero-section {
+    padding: 5rem 1.5rem 3rem !important;
+    min-height: auto !important;
+  }
+
+  .contact-section {
+    padding: 3rem 1.5rem !important;
+  }
+
+  .contact-section h2 {
+    font-size: 2rem !important;
+  }
+
+  .contact-email {
+    font-size: 1rem !important;
+    word-break: break-all;
+  }
+
+  footer {
+    padding: 2rem 1.5rem !important;
+  }
+}
