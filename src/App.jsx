@@ -166,7 +166,7 @@ export default function App() {
         color: 'var(--stone)',
         letterSpacing: '0.08em'
       }}>
-        <p>© 2026 Scott Hoglund Art &nbsp;·&nbsp; Site by <a href="#" style={{ color: 'var(--clay)' }}>K Co</a></p>
+        <p>© 2026 Scott Hoglund Art &nbsp;·&nbsp; Site by <a href="#" style={{ color: 'var(--clay)' }}>CARES Consulting Inc</a> & <a href="#" style={{ color: 'var(--clay)' }}>Kari Hoglund Kounkel LLC</a></p>
       </footer>
 
       {/* LIGHTBOX */}
