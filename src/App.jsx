@@ -82,7 +82,7 @@ export default function App() {
         alignItems: 'center'
       }}>
          <img
-          src="/scott.jpg"
+          src="/scott.jpeg"
           alt="Scott Hoglund"
           style={{
             width: '100%',
