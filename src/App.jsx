@@ -81,21 +81,16 @@ export default function App() {
         gap: '4rem',
         alignItems: 'center'
       }}>
-        <div style={{
-          width: '100%',
-          aspectRatio: '4/5',
-          background: 'var(--warm-cream)',
-          borderRadius: '3px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'var(--stone)',
-          fontSize: '0.8rem',
-          letterSpacing: '0.1em',
-          border: '1px dashed var(--stone)'
-        }}>
-          ARTIST PHOTO
-        </div>
+         <img
+          src="/scott.jpg"
+          alt="Scott Hoglund"
+          style={{
+            width: '100%',
+            aspectRatio: '4/5',
+            objectFit: 'cover',
+            borderRadius: '3px'
+          }}
+        />
         <div>
           <h2 style={{
             fontFamily: "'Cormorant Garamond', serif",
