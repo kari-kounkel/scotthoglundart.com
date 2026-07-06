@@ -146,6 +146,13 @@ a { color: inherit; text-decoration: none; }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Daisy is scampering… */
+@keyframes daisyScamper {
+  0%   { transform: translateX(-8px) rotate(-6deg); }
+  50%  { transform: translateX(8px) rotate(6deg); }
+  100% { transform: translateX(-8px) rotate(-6deg); }
+}
+
 /* ─── RESPONSIVE ─── */
 @media (max-width: 768px) {
   .about-section {

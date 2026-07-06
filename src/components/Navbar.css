@@ -18,17 +18,33 @@
 }
 
 .logo {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.6rem;
-  font-weight: 300;
-  letter-spacing: 0.08em;
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
   color: var(--bark);
   text-decoration: none;
 }
 
-.logo span {
+.logo-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+}
+
+.logo-name span {
   color: var(--clay);
   font-style: italic;
+}
+
+.logo-tag {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.56rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-top: 0.35rem;
+  padding-left: 0.1rem;
 }
 
 .nav-right {
@@ -129,8 +145,13 @@
     padding: 1rem 1.5rem;
   }
 
-  .logo {
+  .logo-name {
     font-size: 1.3rem;
+  }
+
+  .logo-tag {
+    font-size: 0.5rem;
+    letter-spacing: 0.22em;
   }
 
   .hamburger {

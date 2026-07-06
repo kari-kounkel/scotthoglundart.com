@@ -3,13 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scott Hoglund Art</title>
+  <title>Scott Hoglund Art — Curated by Daisy</title>
+  <meta name="description" content="Original paintings, drawings, and prints by Scott Hoglund. A quiet woodland gallery, curated by a squirrel named Daisy." />
+
+  <!-- Acorn favicon -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3.2V1.2' stroke='%233d2b1f' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M5 9c0-4 3.6-6 7-6s7 2 7 6c0 1.1-.9 1.6-2 1.6H7C5.9 10.6 5 10.1 5 9Z' fill='%23a0522d'/%3E%3Cpath d='M6.6 10.6h10.8C17.4 17 14.5 21 12 21S6.6 17 6.6 10.6Z' fill='%23c67a4b'/%3E%3C/svg%3E" />
+
+  <meta property="og:title" content="Scott Hoglund Art — Curated by Daisy" />
+  <meta property="og:description" content="Original works from a quiet woodland gallery, curated by a squirrel named Daisy." />
+  <meta property="og:type" content="website" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- ── Google Analytics (GA4) ──
+       TODO for Kari: add a data stream for scotthoglundart.com in GA4,
+       then replace G-XXXXXXXXXX below with its Measurement ID.
+       (Founders uses G-LQZGMT7X4Y — this needs its OWN stream.) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
 </head>
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
+
+  <!-- Ask Kari support widget (standard on every build) -->
+  <script>
+    window.AskKariConfig = { mode: "support", site: "Scott Hoglund Art" };
+  </script>
+  <script src="https://chat.karikounkel.com/widget.js" defer></script>
 </body>
 </html>

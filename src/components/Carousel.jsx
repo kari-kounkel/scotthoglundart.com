@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { getImageUrl } from '../lib/supabase'
+import { Acorn } from './Daisy'
 
 export default function Carousel({ artworks, onSelect }) {
   const trackRef = useRef(null)
@@ -13,13 +14,8 @@ export default function Carousel({ artworks, onSelect }) {
 
   if (!artworks || artworks.length === 0) {
     return (
-      <div style={{
-        textAlign: 'center',
-        padding: '4rem 2rem',
-        color: 'var(--stone)',
-        fontStyle: 'italic'
-      }}>
-        Gallery coming soon...
+      <div style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--stone)', fontStyle: 'italic' }}>
+        Daisy hasn’t hung anything here just yet. Check back soon.
       </div>
     )
   }
@@ -29,14 +25,8 @@ export default function Carousel({ artworks, onSelect }) {
       <div
         ref={trackRef}
         style={{
-          display: 'flex',
-          gap: '1.5rem',
-          overflowX: 'auto',
-          scrollSnapType: 'x mandatory',
-          scrollBehavior: 'smooth',
-          padding: '2rem 1rem',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
+          display: 'flex', gap: '1.5rem', overflowX: 'auto', scrollSnapType: 'x mandatory',
+          scrollBehavior: 'smooth', padding: '2rem 1rem', scrollbarWidth: 'none', msOverflowStyle: 'none'
         }}
       >
         {artworks.map(art => (
@@ -61,14 +51,10 @@ function ArtCard({ art, onClick }) {
       className="art-card"
       onClick={onClick}
       style={{
-        flex: '0 0 min(340px, 80vw)',
-        scrollSnapAlign: 'center',
-        background: 'white',
-        borderRadius: '3px',
-        overflow: 'hidden',
-        boxShadow: '0 4px 20px var(--shadow), 0 1px 3px var(--shadow)',
-        cursor: 'pointer',
-        transition: 'transform 0.4s ease, box-shadow 0.4s ease'
+        flex: '0 0 min(340px, 80vw)', scrollSnapAlign: 'center', background: 'white',
+        borderRadius: '3px', overflow: 'hidden',
+        boxShadow: '0 4px 20px var(--shadow), 0 1px 3px var(--shadow)', cursor: 'pointer',
+        transition: 'transform 0.4s ease, box-shadow 0.4s ease', position: 'relative'
       }}
       onMouseOver={e => {
         e.currentTarget.style.transform = 'translateY(-6px) scale(1.01)'
@@ -79,52 +65,67 @@ function ArtCard({ art, onClick }) {
         e.currentTarget.style.boxShadow = '0 4px 20px var(--shadow), 0 1px 3px var(--shadow)'
       }}
     >
+      {/* Daisy's Pick seal */}
+      {art.is_daisy_pick && (
+        <span title="Daisy’s Pick — she guarded this one" style={{
+          position: 'absolute', top: '0.75rem', left: '0.75rem', zIndex: 2,
+          display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+          background: 'rgba(245,240,232,0.94)', color: 'var(--clay)', borderRadius: '20px',
+          padding: '0.28rem 0.65rem 0.28rem 0.5rem', fontSize: '0.64rem', letterSpacing: '0.1em',
+          textTransform: 'uppercase', fontWeight: 600, boxShadow: '0 1px 6px var(--shadow)'
+        }}>
+          <Acorn size={13} color="var(--clay)" /> Daisy’s Pick
+        </span>
+      )}
+
       <div style={{
-        width: '100%',
-        aspectRatio: isLandscape ? '4/3' : '3/4',
-        background: 'var(--warm-cream)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden'
+        width: '100%', aspectRatio: isLandscape ? '4/3' : '3/4', background: 'var(--warm-cream)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
+        position: 'relative'
       }}>
         <img
-          src={imageUrl}
-          alt={art.title}
+          src={imageUrl} alt={art.title}
           style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-            padding: '1rem',
-            display: 'block'
+            width: '100%', height: '100%', objectFit: 'contain', padding: '1rem', display: 'block',
+            filter: art.is_adopted ? 'saturate(0.85)' : 'none'
           }}
           loading="lazy"
         />
+        {/* Adopted into New Forests ribbon */}
+        {art.is_adopted && (
+          <span style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0,
+            background: 'linear-gradient(to top, rgba(74,93,62,0.95), rgba(74,93,62,0.82))',
+            color: 'var(--parchment)', fontSize: '0.66rem', letterSpacing: '0.14em',
+            textTransform: 'uppercase', textAlign: 'center', padding: '0.5rem',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem'
+          }}>
+            <Acorn size={13} color="var(--parchment)" /> Adopted into New Forests
+          </span>
+        )}
       </div>
+
       <div style={{ padding: '1.25rem 1.5rem' }}>
-        <div style={{
-          fontFamily: "'Cormorant Garamond', serif",
-          fontSize: '1.3rem',
-          fontWeight: 400,
-          marginBottom: '0.3rem'
-        }}>
+        <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.3rem', fontWeight: 400, marginBottom: '0.3rem' }}>
           {art.title}
         </div>
-        <div style={{
-          fontSize: '0.78rem',
-          color: 'var(--stone)',
-          letterSpacing: '0.05em'
-        }}>
+        <div style={{ fontSize: '0.78rem', color: 'var(--stone)', letterSpacing: '0.05em' }}>
           {art.medium || 'Mixed media'}{art.year ? ` · ${art.year}` : ''}
         </div>
-        {art.price && (
-          <span style={{
-            display: 'inline-block',
-            marginTop: '0.6rem',
-            fontSize: '0.82rem',
-            color: 'var(--clay)',
-            fontWeight: 500
+
+        {/* Daisy's curatorial note */}
+        {art.daisy_note && (
+          <p style={{
+            fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '0.92rem',
+            color: 'var(--bark-light)', lineHeight: 1.5, marginTop: '0.7rem',
+            paddingLeft: '0.7rem', borderLeft: '2px solid var(--terracotta)'
           }}>
+            {art.daisy_note} <span style={{ color: 'var(--stone)', fontStyle: 'normal', fontSize: '0.72rem' }}>— Daisy</span>
+          </p>
+        )}
+
+        {art.price && !art.is_adopted && (
+          <span style={{ display: 'inline-block', marginTop: '0.6rem', fontSize: '0.82rem', color: 'var(--clay)', fontWeight: 500 }}>
             {art.price}
           </span>
         )}
@@ -138,27 +139,12 @@ function CarouselBtn({ onClick, children }) {
     <button
       onClick={onClick}
       style={{
-        width: '48px',
-        height: '48px',
-        border: '1.5px solid var(--bark)',
-        background: 'transparent',
-        color: 'var(--bark)',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: '50%',
-        fontSize: '1.2rem',
-        transition: 'all 0.3s'
+        width: '48px', height: '48px', border: '1.5px solid var(--bark)', background: 'transparent',
+        color: 'var(--bark)', cursor: 'pointer', display: 'flex', alignItems: 'center',
+        justifyContent: 'center', borderRadius: '50%', fontSize: '1.2rem', transition: 'all 0.3s'
       }}
-      onMouseOver={e => {
-        e.target.style.background = 'var(--bark)'
-        e.target.style.color = 'var(--parchment)'
-      }}
-      onMouseOut={e => {
-        e.target.style.background = 'transparent'
-        e.target.style.color = 'var(--bark)'
-      }}
+      onMouseOver={e => { e.target.style.background = 'var(--bark)'; e.target.style.color = 'var(--parchment)' }}
+      onMouseOut={e => { e.target.style.background = 'transparent'; e.target.style.color = 'var(--bark)' }}
     >
       {children}
     </button>

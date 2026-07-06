@@ -22,6 +22,9 @@ export default function Admin() {
   const [year, setYear] = useState('')
   const [price, setPrice] = useState('')
   const [description, setDescription] = useState('')
+  const [daisyNote, setDaisyNote] = useState('')
+  const [isDaisyPick, setIsDaisyPick] = useState(false)
+  const [isAdopted, setIsAdopted] = useState(false)
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState(null)
   const fileInputRef = useRef(null)
@@ -155,7 +158,10 @@ export default function Admin() {
     try {
       if (editingId) {
         // UPDATE existing
-        const updates = { title, medium, year, price, description }
+        const updates = {
+          title, medium, year, price, description,
+          daisy_note: daisyNote, is_daisy_pick: isDaisyPick, is_adopted: isAdopted
+        }
 
         // If new file selected, upload it
         if (file) {
@@ -184,6 +190,9 @@ export default function Admin() {
           year,
           price,
           description,
+          daisy_note: daisyNote,
+          is_daisy_pick: isDaisyPick,
+          is_adopted: isAdopted,
           image_path: imagePath,
           orientation
         })
@@ -208,6 +217,9 @@ export default function Admin() {
     setYear(art.year || '')
     setPrice(art.price || '')
     setDescription(art.description || '')
+    setDaisyNote(art.daisy_note || '')
+    setIsDaisyPick(!!art.is_daisy_pick)
+    setIsAdopted(!!art.is_adopted)
     setFile(null)
     setPreview(getImageUrl(art.image_path))
 
@@ -240,6 +252,17 @@ export default function Admin() {
     }
   }
 
+  // ─── TOGGLE ADOPTED (sold) ───
+  async function toggleAdopted(art) {
+    try {
+      await updateArtwork(art.id, { is_adopted: !art.is_adopted })
+      await loadArtworks()
+      toast(art.is_adopted ? 'Back on the shelf' : '🌰 Adopted into New Forests')
+    } catch (err) {
+      toast('Error: ' + err.message)
+    }
+  }
+
   function resetForm() {
     setEditingId(null)
     setTitle('')
@@ -247,6 +270,9 @@ export default function Admin() {
     setYear('')
     setPrice('')
     setDescription('')
+    setDaisyNote('')
+    setIsDaisyPick(false)
+    setIsAdopted(false)
     setFile(null)
     setPreview(null)
     if (fileInputRef.current) fileInputRef.current.value = ''
@@ -616,6 +642,32 @@ export default function Admin() {
             <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="A few words about this piece..." />
           </div>
 
+          {/* ─── Daisy's curation ─── */}
+          <div style={{
+            background: 'var(--warm-cream)', border: '1px solid #e0d8ca', borderRadius: '4px',
+            padding: '1.2rem 1.3rem', marginBottom: '1.2rem'
+          }}>
+            <p style={{ fontSize: '0.72rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--clay)', marginBottom: '1rem', fontWeight: 600 }}>
+              🌰 Daisy’s Corner
+            </p>
+            <div className="form-group" style={{ marginBottom: '1rem' }}>
+              <label>Daisy’s Note (optional)</label>
+              <textarea
+                value={daisyNote}
+                onChange={e => setDaisyNote(e.target.value)}
+                placeholder="Written as if Daisy chose or protected this piece — e.g. “I sat with this one the longest.”"
+              />
+            </div>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', marginBottom: '0.7rem', fontSize: '0.88rem', color: 'var(--bark-light)' }}>
+              <input type="checkbox" checked={isDaisyPick} onChange={e => setIsDaisyPick(e.target.checked)} style={{ width: 'auto' }} />
+              Mark as <strong>Daisy’s Pick</strong> (shows an acorn seal on the piece)
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.88rem', color: 'var(--bark-light)' }}>
+              <input type="checkbox" checked={isAdopted} onChange={e => setIsAdopted(e.target.checked)} style={{ width: 'auto' }} />
+              <strong>Adopted into New Forests</strong> (sold — hides the price, adds the ribbon)
+            </label>
+          </div>
+
           <button type="submit" className="btn-primary" disabled={uploading}>
             {uploading ? 'Working...' : editingId ? 'Save Changes' : 'Add to Gallery'}
           </button>
@@ -664,18 +716,35 @@ export default function Admin() {
                 opacity: art.is_visible ? 1 : 0.5,
                 transition: 'all 0.3s'
               }}>
-                <img
-                  src={getImageUrl(art.image_path)}
-                  alt={art.title}
-                  style={{
-                    width: '100%',
-                    aspectRatio: '1',
-                    objectFit: 'cover',
-                    display: 'block',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => startEdit(art)}
-                />
+                <div style={{ position: 'relative' }}>
+                  <img
+                    src={getImageUrl(art.image_path)}
+                    alt={art.title}
+                    style={{
+                      width: '100%',
+                      aspectRatio: '1',
+                      objectFit: 'cover',
+                      display: 'block',
+                      cursor: 'pointer',
+                      filter: art.is_adopted ? 'saturate(0.8)' : 'none'
+                    }}
+                    onClick={() => startEdit(art)}
+                  />
+                  {art.is_daisy_pick && (
+                    <span title="Daisy's Pick" style={{
+                      position: 'absolute', top: '0.35rem', left: '0.35rem', fontSize: '0.8rem',
+                      background: 'rgba(245,240,232,0.92)', borderRadius: '50%', width: '1.5rem', height: '1.5rem',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}>🌰</span>
+                  )}
+                  {art.is_adopted && (
+                    <span style={{
+                      position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(74,93,62,0.9)',
+                      color: 'var(--parchment)', fontSize: '0.56rem', letterSpacing: '0.1em',
+                      textTransform: 'uppercase', textAlign: 'center', padding: '0.25rem'
+                    }}>Adopted</span>
+                  )}
+                </div>
                 <div style={{ padding: '0.6rem 0.8rem' }}>
                   <p style={{
                     fontSize: '0.78rem',
@@ -688,6 +757,7 @@ export default function Admin() {
                   </p>
                   <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.4rem' }}>
                     <SmallBtn onClick={() => startEdit(art)} title="Edit">✎</SmallBtn>
+                    <SmallBtn onClick={() => toggleAdopted(art)} title={art.is_adopted ? 'Mark available' : 'Mark adopted (sold)'}>🌰</SmallBtn>
                     <SmallBtn onClick={() => toggleVisibility(art)} title={art.is_visible ? 'Hide' : 'Show'}>
                       {art.is_visible ? '👁' : '👁‍🗨'}
                     </SmallBtn>

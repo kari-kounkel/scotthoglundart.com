@@ -73,6 +73,18 @@ export async function deleteArtwork(id) {
   if (error) throw error
 }
 
+// ─── DAISY'S DISPATCH (newsletter → the Nut Cache) ───
+
+export async function subscribeToDispatch(email) {
+  // upsert on the unique email so a repeat signup is a no-op, not an error.
+  // No .select() chained: anon has insert-only rights (no read policy) by design.
+  const { error } = await supabase
+    .from('dispatch_subscribers')
+    .upsert({ email: email.trim().toLowerCase() }, { onConflict: 'email', ignoreDuplicates: true })
+
+  if (error) throw error
+}
+
 // ─── IMAGE UPLOAD ───
 
 export async function uploadImage(file) {

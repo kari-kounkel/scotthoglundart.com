@@ -21,7 +21,8 @@ export default function Navbar() {
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <a href="/" className="logo">
-        Scott Hoglund <span>Art</span>
+        <span className="logo-name">Scott Hoglund <span>Art</span></span>
+        <span className="logo-tag">Curated by Daisy</span>
       </a>
 
       <button
@@ -37,7 +38,8 @@ export default function Navbar() {
       <div className={`nav-right ${menuOpen ? 'open' : ''}`}>
         <a className="nav-link" onClick={() => handleNavClick('#gallery')}>Gallery</a>
         <a className="nav-link" onClick={() => handleNavClick('#about')}>About</a>
-        <a className="nav-link" onClick={() => handleNavClick('#contact')}>Contact</a>
+        <a className="nav-link" onClick={() => handleNavClick('#trading-post')}>Trading Post</a>
+        <a className="nav-link" onClick={() => handleNavClick('#dispatch')}>Dispatch</a>
         <button
           className="nav-admin"
           onClick={() => { setMenuOpen(false); navigate('/admin') }}
