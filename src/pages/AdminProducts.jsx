@@ -15,6 +15,8 @@ export default function AdminProducts({ artworks }) {
   const [title, setTitle] = useState('')
   const [price, setPrice] = useState('')
   const [blurb, setBlurb] = useState('')
+  const [pfProductId, setPfProductId] = useState('')
+  const [pfVariantId, setPfVariantId] = useState('')
   const [busy, setBusy] = useState(false)
 
   useEffect(() => { load() }, [])
@@ -42,9 +44,12 @@ export default function AdminProducts({ artworks }) {
         price_cents: cents,
         image_path: a ? a.image_path : null,
         blurb: blurb || null,
+        printify_product_id: pfProductId.trim() || null,
+        printify_variant_id: pfVariantId.trim() ? Number(pfVariantId.trim()) : null,
       })
       toast('🌰 Added to the Trading Post')
       setArtworkId(''); setKind('print'); setTitle(''); setPrice(''); setBlurb('')
+      setPfProductId(''); setPfVariantId('')
       await load()
     } catch (err) { toast('Error: ' + err.message) }
     finally { setBusy(false) }
@@ -93,6 +98,27 @@ export default function AdminProducts({ artworks }) {
             <label>Blurb (optional)</label>
             <input value={blurb} onChange={e => setBlurb(e.target.value)} placeholder="Printed on heavy matte stock." />
           </div>
+
+          {/* Printify fulfillment mapping */}
+          <div style={{ background: 'var(--warm-cream)', border: '1px solid #e0d8ca', borderRadius: '4px', padding: '1.1rem 1.2rem', marginBottom: '1.2rem' }}>
+            <p style={{ fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--clay)', marginBottom: '0.3rem', fontWeight: 600 }}>
+              Printify fulfillment
+            </p>
+            <p style={{ fontSize: '0.75rem', color: 'var(--stone)', marginBottom: '1rem', lineHeight: 1.5 }}>
+              Paste the IDs from this item’s page in your Printify dashboard so paid orders auto-print & ship. Leave blank until Printify is set up.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '1rem' }}>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label>Printify product ID</label>
+                <input value={pfProductId} onChange={e => setPfProductId(e.target.value)} placeholder="e.g. 5f5c…" />
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label>Variant ID</label>
+                <input value={pfVariantId} onChange={e => setPfVariantId(e.target.value)} placeholder="e.g. 43619" inputMode="numeric" />
+              </div>
+            </div>
+          </div>
+
           <button type="submit" className="btn-primary" disabled={busy}>{busy ? 'Adding…' : 'Add to Trading Post'}</button>
         </form>
       </div>
