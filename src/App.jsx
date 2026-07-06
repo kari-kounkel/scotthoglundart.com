@@ -172,7 +172,7 @@ export default function App() {
         <p style={{ fontSize: '0.78rem', color: 'var(--stone)', letterSpacing: '0.08em', lineHeight: 1.8 }}>
           © 2026 Scott Hoglund Art &nbsp;·&nbsp; Site by{' '}
           <a href="https://caresmn.com" style={{ color: 'var(--clay)' }}>CARES Consulting Inc</a>{' '}&amp;{' '}
-          <span style={{ color: 'var(--clay)' }}>Kari Hoglund Kounkel LLC</span>
+          <a href="https://karikounkel.com" style={{ color: 'var(--clay)' }}>Kari Hoglund Kounkel LLC</a>
         </p>
 
         <HiddenDaisy

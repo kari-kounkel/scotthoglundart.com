@@ -192,10 +192,10 @@ export function ScamperingDaisy({ id = 'scamper' }) {
       style={{
         position: 'fixed', bottom: '0.3rem', left: 0, zIndex: 90,
         background: 'none', border: 'none', padding: 0, cursor: 'pointer', lineHeight: 0,
-        animation: 'scamperAcross 17s linear infinite'
+        animation: 'scamperAcross 18s linear infinite'
       }}
     >
-      <span style={{ display: 'inline-block', animation: 'scamperBob 0.32s ease-in-out infinite' }}>
+      <span style={{ display: 'inline-block', animation: 'scamperBob 0.5s ease-in-out infinite' }}>
         <DaisyMark size={40} color="var(--clay)" />
       </span>
     </button>
