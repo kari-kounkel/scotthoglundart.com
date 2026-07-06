@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useHunt } from './huntContext'
 
 /* ───────────────────────────────────────────────────────────
    Daisy — the tiny unofficial gallery curator.
@@ -73,12 +74,16 @@ export function DaisyMark({ size = 96, color = 'var(--clay)', style, title = 'Da
 let openNoteFn = null
 export function showDaisyNote(note) { if (openNoteFn) openNoteFn(note) }
 
-// A tiny Daisy tucked into a corner of a section. Click = a note.
-export function HiddenDaisy({ note, size = 34, style }) {
+// A tiny Daisy tucked into a corner of a section. Click = a note + an acorn.
+export function HiddenDaisy({ id, note, size = 34, style }) {
+  const hunt = useHunt()
   const [hover, setHover] = useState(false)
+  useEffect(() => { if (id) hunt?.register(id) }, [])
+  const found = id ? hunt?.isFound(id) : false
+
   return (
     <button
-      onClick={() => showDaisyNote(note)}
+      onClick={() => { if (id) hunt?.collect(id); showDaisyNote(note) }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       title="…is that Daisy?"
@@ -86,13 +91,13 @@ export function HiddenDaisy({ note, size = 34, style }) {
       style={{
         position: 'absolute', background: 'none', border: 'none', padding: 0,
         cursor: 'pointer', lineHeight: 0,
-        opacity: hover ? 0.95 : 0.22,
+        opacity: hover ? 0.95 : found ? 0.5 : 0.22,
         transform: hover ? 'translateY(-3px) rotate(-4deg)' : 'none',
         transition: 'opacity 0.4s ease, transform 0.4s ease',
         ...style
       }}
     >
-      <DaisyMark size={size} color={hover ? 'var(--clay)' : 'var(--bark-light)'} />
+      <DaisyMark size={size} color={hover || found ? 'var(--clay)' : 'var(--bark-light)'} />
     </button>
   )
 }

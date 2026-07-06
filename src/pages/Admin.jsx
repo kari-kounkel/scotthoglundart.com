@@ -4,9 +4,11 @@ import {
   supabase, signIn, signOut, getSession,
   resetPassword, updatePassword,
   fetchAllArtworks, createArtwork, updateArtwork, deleteArtwork as deleteArtworkApi,
-  uploadImage, getImageUrl
+  uploadImage, getImageUrl, reorderArtworks, rankByNewest
 } from '../lib/supabase'
 import Toast, { toast } from '../components/Toast'
+import AdminProducts from './AdminProducts'
+import AdminOrders from './AdminOrders'
 
 export default function Admin() {
   const navigate = useNavigate()
@@ -15,6 +17,8 @@ export default function Admin() {
   const [artworks, setArtworks] = useState([])
   const [editingId, setEditingId] = useState(null)
   const [uploading, setUploading] = useState(false)
+  const [tab, setTab] = useState('gallery')
+  const [dragIndex, setDragIndex] = useState(null)
 
   // Form state
   const [title, setTitle] = useState('')
@@ -247,6 +251,34 @@ export default function Admin() {
       await updateArtwork(art.id, { is_visible: !art.is_visible })
       await loadArtworks()
       toast(art.is_visible ? 'Hidden from gallery' : 'Now visible in gallery')
+    } catch (err) {
+      toast('Error: ' + err.message)
+    }
+  }
+
+  // ─── REORDER (rank) ───
+  async function handleDrop(toIndex) {
+    if (dragIndex === null || dragIndex === toIndex) { setDragIndex(null); return }
+    const next = [...artworks]
+    const [moved] = next.splice(dragIndex, 1)
+    next.splice(toIndex, 0, moved)
+    setArtworks(next)            // optimistic
+    setDragIndex(null)
+    try {
+      await reorderArtworks(next.map(a => a.id))
+      toast('✦ New order saved')
+    } catch (err) {
+      toast('Error saving order: ' + err.message)
+      await loadArtworks()
+    }
+  }
+
+  async function handleRankNewest() {
+    if (!confirm('Re-rank the whole gallery newest-first? (You can still drag to fine-tune after.)')) return
+    try {
+      await rankByNewest()
+      await loadArtworks()
+      toast('✦ Ranked newest-first')
     } catch (err) {
       toast('Error: ' + err.message)
     }
@@ -530,6 +562,24 @@ export default function Admin() {
         </div>
       </div>
 
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.75rem', flexWrap: 'wrap' }}>
+        {[['gallery', 'Gallery'], ['products', 'Trading Post'], ['orders', 'Orders']].map(([key, label]) => (
+          <button key={key} onClick={() => setTab(key)} style={{
+            background: tab === key ? 'var(--bark)' : 'transparent',
+            color: tab === key ? 'var(--parchment)' : 'var(--bark-light)',
+            border: `1.5px solid ${tab === key ? 'var(--bark)' : '#d4cdc0'}`,
+            borderRadius: '20px', padding: '0.4rem 1.1rem', cursor: 'pointer',
+            fontFamily: "'Outfit', sans-serif", fontSize: '0.72rem', letterSpacing: '0.1em',
+            textTransform: 'uppercase', transition: 'all 0.25s'
+          }}>{label}</button>
+        ))}
+      </div>
+
+      {tab === 'products' && <AdminProducts artworks={artworks} />}
+      {tab === 'orders' && <AdminOrders />}
+
+      {tab === 'gallery' && (<>
       {/* Upload / Edit Form */}
       <div style={{
         background: 'white',
@@ -687,14 +737,19 @@ export default function Admin() {
         borderRadius: '4px',
         boxShadow: '0 2px 12px var(--shadow)'
       }}>
-        <h2 style={{
-          fontFamily: "'Cormorant Garamond', serif",
-          fontSize: '1.5rem',
-          fontWeight: 400,
-          marginBottom: '1.5rem'
-        }}>
-          Collection
-        </h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.6rem', marginBottom: '0.5rem' }}>
+          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.5rem', fontWeight: 400 }}>
+            Collection
+          </h2>
+          <button onClick={handleRankNewest} style={{
+            background: 'none', border: '1.5px solid var(--clay)', color: 'var(--clay)',
+            padding: '0.4rem 0.9rem', fontSize: '0.7rem', letterSpacing: '0.06em', textTransform: 'uppercase',
+            borderRadius: '3px', cursor: 'pointer', fontFamily: "'Outfit', sans-serif"
+          }}>↻ Rank newest-first</button>
+        </div>
+        <p style={{ fontSize: '0.76rem', color: 'var(--stone)', marginBottom: '1.5rem' }}>
+          Drag any piece to rank it — the order here is the order visitors see under “Curated.”
+        </p>
 
         {artworks.length === 0 ? (
           <p style={{ color: 'var(--stone)', fontStyle: 'italic', fontSize: '0.9rem' }}>
@@ -706,16 +761,23 @@ export default function Admin() {
             gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
             gap: '1rem'
           }}>
-            {artworks.map(art => (
-              <div key={art.id} style={{
-                position: 'relative',
-                borderRadius: '4px',
-                overflow: 'hidden',
-                background: 'var(--warm-cream)',
-                border: editingId === art.id ? '2px solid var(--clay)' : '1px solid #e8e2d8',
-                opacity: art.is_visible ? 1 : 0.5,
-                transition: 'all 0.3s'
-              }}>
+            {artworks.map((art, idx) => (
+              <div key={art.id}
+                draggable
+                onDragStart={() => setDragIndex(idx)}
+                onDragOver={e => e.preventDefault()}
+                onDrop={() => handleDrop(idx)}
+                style={{
+                  position: 'relative',
+                  borderRadius: '4px',
+                  overflow: 'hidden',
+                  background: 'var(--warm-cream)',
+                  border: editingId === art.id ? '2px solid var(--clay)'
+                    : dragIndex === idx ? '2px dashed var(--terracotta)' : '1px solid #e8e2d8',
+                  opacity: art.is_visible ? 1 : 0.5,
+                  transition: 'border 0.2s',
+                  cursor: 'grab'
+                }}>
                 <div style={{ position: 'relative' }}>
                   <img
                     src={getImageUrl(art.image_path)}
@@ -769,6 +831,7 @@ export default function Admin() {
           </div>
         )}
       </div>
+      </>)}
 
       <Toast />
     </div>

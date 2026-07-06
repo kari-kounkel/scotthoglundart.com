@@ -73,6 +73,82 @@ export async function deleteArtwork(id) {
   if (error) throw error
 }
 
+// ─── GALLERY ORDER (ranking) ───
+
+// Persist a new manual rank order (array of ids, top → bottom).
+export async function reorderArtworks(orderedIds) {
+  const updates = orderedIds.map((id, i) =>
+    supabase.from('artworks').update({ sort_order: i }).eq('id', id)
+  )
+  const results = await Promise.all(updates)
+  const failed = results.find(r => r.error)
+  if (failed) throw failed.error
+}
+
+// One-click: rank everything newest-first.
+export async function rankByNewest() {
+  const all = await fetchAllArtworks()
+  const byNewest = [...all].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+  await reorderArtworks(byNewest.map(a => a.id))
+}
+
+// ─── PRODUCTS (Daisy's Trading Post) ───
+
+export async function fetchProducts() {
+  const { data, error } = await supabase
+    .from('products').select('*')
+    .eq('is_active', true)
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data
+}
+
+export async function fetchAllProducts() {
+  const { data, error } = await supabase
+    .from('products').select('*')
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data
+}
+
+export async function createProduct(product) {
+  const { data, error } = await supabase.from('products').insert(product).select().single()
+  if (error) throw error
+  return data
+}
+
+export async function updateProduct(id, updates) {
+  const { data, error } = await supabase.from('products').update(updates).eq('id', id).select().single()
+  if (error) throw error
+  return data
+}
+
+export async function deleteProduct(id) {
+  const { error } = await supabase.from('products').delete().eq('id', id)
+  if (error) throw error
+}
+
+// ─── ORDERS ───
+
+export async function placeOrder(order) {
+  // no .select(): buyers have insert-only rights (no read policy) by design
+  const { error } = await supabase.from('orders').insert(order)
+  if (error) throw error
+}
+
+export async function fetchOrders() {
+  const { data, error } = await supabase
+    .from('orders').select('*').order('created_at', { ascending: false })
+  if (error) throw error
+  return data
+}
+
+export async function updateOrderStatus(id, status) {
+  const { error } = await supabase.from('orders').update({ status }).eq('id', id)
+  if (error) throw error
+}
+
 // ─── DAISY'S DISPATCH (newsletter → the Nut Cache) ───
 
 export async function subscribeToDispatch(email) {

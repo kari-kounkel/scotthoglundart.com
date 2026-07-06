@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
-import Carousel from './components/Carousel'
+import Gallery from './components/Gallery'
 import Lightbox from './components/Lightbox'
 import Toast from './components/Toast'
 import Dispatch from './components/Dispatch'
+import TradingPost from './components/TradingPost'
 import { fetchArtworks } from './lib/supabase'
 import {
   Acorn, AcornDivider, DaisyMark, DaisyLoader,
   HiddenDaisy, DaisyNoteModal
 } from './components/Daisy'
+import { AcornHuntProvider, ScamperingDaisy } from './components/AcornHunt'
 
 export default function App() {
   const [artworks, setArtworks] = useState([])
@@ -29,13 +31,13 @@ export default function App() {
   }
 
   return (
-    <>
+    <AcornHuntProvider>
       <Navbar />
 
       {/* ─── HERO / GALLERY ─── */}
       <section id="gallery" className="hero-section" style={{
         minHeight: '100vh', display: 'flex', flexDirection: 'column',
-        justifyContent: 'center', alignItems: 'center', padding: '6rem 2rem 4rem',
+        justifyContent: 'flex-start', alignItems: 'center', padding: '8rem 2rem 5rem',
         position: 'relative'
       }}>
         <p style={{
@@ -64,10 +66,11 @@ export default function App() {
         <div style={{ animation: 'fadeUp 1s ease 0.8s both', width: '100%', display: 'flex', justifyContent: 'center' }}>
           {loading
             ? <DaisyLoader />
-            : <Carousel artworks={artworks} onSelect={setSelectedArt} />}
+            : <Gallery artworks={artworks} onSelect={setSelectedArt} />}
         </div>
 
         <HiddenDaisy
+          id="hero"
           note="He didn’t reach for me. That’s why I came."
           size={30}
           style={{ left: '4vw', bottom: '3rem' }}
@@ -119,15 +122,16 @@ export default function App() {
             Every gallery has a curator. This one has a squirrel.
           </p>
           <p style={{ fontSize: '0.96rem', lineHeight: 1.9, color: 'var(--bark-light)', marginBottom: '1.25rem' }}>
-            Years ago, in a hard and unlikely place, Scott made an improbable friend. A wild squirrel
+            Not long ago, in a hard and unlikely place, Scott made an improbable friend. A wild squirrel
             he named Daisy began coming close — closer than wild things usually do — until one afternoon
             she climbed right up and settled onto his lap. She chose him. In a season with very little
             softness in it, something small and wild decided he was safe.
           </p>
           <p style={{ fontSize: '0.96rem', lineHeight: 1.9, color: 'var(--bark-light)', marginBottom: '1.25rem' }}>
-            Daisy still remembers him. So in her honor she was made the unofficial curator of this
-            gallery — the one who decides which pieces get watched over, which are worth guarding like
-            a good acorn. When you spot her little mark on a work, that’s <em>Daisy’s Pick</em>: she picked it.
+            Scott came home in February. Daisy stayed wild — but she still knows him, and he still
+            looks for her. So in her honor she was made the unofficial curator of this gallery: the one
+            who decides which pieces get watched over, which are worth guarding like a good acorn.
+            When you spot her little mark on a work, that’s <em>Daisy’s Pick</em> — she picked it.
           </p>
           <p style={{ fontSize: '0.96rem', lineHeight: 1.9, color: 'var(--bark-light)' }}>
             The art here is Scott’s. Daisy just keeps an eye on it — and tucks a few notes away for
@@ -135,6 +139,7 @@ export default function App() {
           </p>
 
           <HiddenDaisy
+            id="about"
             note="Everything worth keeping, I keep twice."
             size={32}
             style={{ right: '2vw', bottom: '1.5rem' }}
@@ -142,52 +147,18 @@ export default function App() {
         </div>
       </section>
 
-      {/* ─── DAISY'S TRADING POST ─── */}
-      <section id="trading-post" style={{ padding: '6rem 2rem', textAlign: 'center', position: 'relative' }}>
-        <div style={{ maxWidth: '620px', margin: '0 auto' }}>
-          <p style={{
-            display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.68rem',
-            letterSpacing: '0.24em', textTransform: 'uppercase', color: 'var(--terracotta)', marginBottom: '1rem'
-          }}>
-            <Acorn size={14} color="var(--terracotta)" /> Daisy’s Trading Post
-          </p>
-          <h2 style={{
-            fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(1.8rem, 5vw, 2.5rem)',
-            fontWeight: 300, marginBottom: '1.25rem'
-          }}>
-            Take a piece home
-          </h2>
-          <p style={{ color: 'var(--bark-light)', fontSize: '0.95rem', lineHeight: 1.8, marginBottom: '1.25rem' }}>
-            Originals and prints find their way to new walls from here. When a work leaves the gallery,
-            Daisy marks it <strong>Adopted into New Forests</strong> — because nothing good stays buried forever.
-            Everything still on these shelves is available.
-          </p>
-          <p style={{ color: 'var(--stone)', fontSize: '0.9rem', marginBottom: '2rem' }}>
-            To ask after an available piece, a commission, or just to say hello:
-          </p>
-          <a className="contact-email" href="mailto:scott@scotthoglundart.com"
-            style={{
-              fontFamily: "'Cormorant Garamond', serif", fontSize: '1.3rem', color: 'var(--clay)',
-              textDecoration: 'none', borderBottom: '1.5px solid transparent', transition: 'border-color 0.3s',
-              letterSpacing: '0.02em'
-            }}
-            onMouseOver={e => e.target.style.borderBottomColor = 'var(--clay)'}
-            onMouseOut={e => e.target.style.borderBottomColor = 'transparent'}
-          >
-            scott@scotthoglundart.com
-          </a>
-
-          <HiddenDaisy
-            note="Adopted doesn’t mean gone. It means it found its forest."
-            size={30}
-            style={{ left: '3vw', top: '2rem' }}
-          />
-        </div>
-      </section>
+      {/* ─── DAISY'S TRADING POST (shop) ─── */}
+      <TradingPost />
 
       {/* ─── DAISY'S DISPATCH ─── */}
-      <div style={{ background: 'var(--warm-cream)' }}>
+      <div style={{ background: 'var(--warm-cream)', position: 'relative' }}>
         <Dispatch />
+        <HiddenDaisy
+          id="dispatch"
+          note="I never send junk. Only the good acorns."
+          size={28}
+          style={{ left: '5vw', bottom: '2rem' }}
+        />
       </div>
 
       {/* ─── FOOTER ─── */}
@@ -205,16 +176,18 @@ export default function App() {
         </p>
 
         <HiddenDaisy
+          id="footer"
           note="Psst — the good stuff is never on the top shelf. Keep looking."
           size={28}
           style={{ right: '4vw', bottom: '1.25rem' }}
         />
       </footer>
 
-      {/* ─── OVERLAYS ─── */}
+      {/* ─── OVERLAYS + FUN ─── */}
       {selectedArt && <Lightbox art={selectedArt} onClose={() => setSelectedArt(null)} />}
       <DaisyNoteModal />
+      <ScamperingDaisy />
       <Toast />
-    </>
+    </AcornHuntProvider>
   )
 }
