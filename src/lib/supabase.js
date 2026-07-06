@@ -149,6 +149,41 @@ export async function updateOrderStatus(id, status) {
   if (error) throw error
 }
 
+// ─── CUSTOM COMMISSION REQUESTS ───
+
+// Uploads reference images to the private bucket, then files the request.
+export async function submitCustomRequest(fields, files) {
+  const image_paths = []
+  for (const file of (files || [])) {
+    const ext = file.name.split('.').pop()
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+    const { error: upErr } = await supabase.storage.from('custom-uploads').upload(path, file, { cacheControl: '3600', upsert: false })
+    if (upErr) throw upErr
+    image_paths.push(path)
+  }
+  // no .select(): requesters have insert-only rights by design
+  const { error } = await supabase.from('custom_requests').insert({ ...fields, image_paths })
+  if (error) throw error
+}
+
+export async function fetchCustomRequests() {
+  const { data, error } = await supabase.from('custom_requests').select('*').order('created_at', { ascending: false })
+  if (error) throw error
+  return data
+}
+
+export async function updateCustomRequest(id, updates) {
+  const { error } = await supabase.from('custom_requests').update(updates).eq('id', id)
+  if (error) throw error
+}
+
+// Signed URL so Scott (authenticated) can view a private reference image.
+export async function getCustomUploadUrl(path) {
+  const { data, error } = await supabase.storage.from('custom-uploads').createSignedUrl(path, 3600)
+  if (error) return null
+  return data.signedUrl
+}
+
 // ─── DAISY'S DISPATCH (newsletter → the Nut Cache) ───
 
 export async function subscribeToDispatch(email) {

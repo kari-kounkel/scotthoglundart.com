@@ -39,6 +39,7 @@ export default function Navbar() {
         <a className="nav-link" onClick={() => handleNavClick('#gallery')}>Gallery</a>
         <a className="nav-link" onClick={() => handleNavClick('#about')}>About</a>
         <a className="nav-link" onClick={() => handleNavClick('#trading-post')}>Trading Post</a>
+        <a className="nav-link" onClick={() => handleNavClick('#commission')}>Commission</a>
         <a className="nav-link" onClick={() => handleNavClick('#dispatch')}>Dispatch</a>
         <button
           className="nav-admin"

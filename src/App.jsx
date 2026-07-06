@@ -5,6 +5,7 @@ import Lightbox from './components/Lightbox'
 import Toast from './components/Toast'
 import Dispatch from './components/Dispatch'
 import TradingPost from './components/TradingPost'
+import CustomOrder from './components/CustomOrder'
 import { fetchArtworks } from './lib/supabase'
 import {
   Acorn, AcornDivider, DaisyMark, DaisyLoader,
@@ -149,6 +150,11 @@ export default function App() {
 
       {/* ─── DAISY'S TRADING POST (shop) ─── */}
       <TradingPost />
+
+      {/* ─── COMMISSION A CUSTOM PIECE ─── */}
+      <div style={{ background: 'var(--warm-cream)' }}>
+        <CustomOrder />
+      </div>
 
       {/* ─── DAISY'S DISPATCH ─── */}
       <div style={{ background: 'var(--warm-cream)', position: 'relative' }}>

@@ -11,6 +11,10 @@ const money = (cents) => `$${(cents / 100).toFixed(2)}`
 const LS_CART = 'daisy.cart'
 const COUPON = 'DAISY10'
 
+// Flip to true only once Printify + Stripe are wired and live-tested.
+// Until then the shop is a preview (no checkout); commissions are the live path.
+const SHOP_LIVE = false
+
 export default function TradingPost() {
   const [products, setProducts] = useState(null)
   const [cart, setCart] = useState(() => {
@@ -57,10 +61,22 @@ export default function TradingPost() {
         <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(1.8rem, 5vw, 2.5rem)', fontWeight: 300, marginBottom: '1rem' }}>
           Take a little of it home
         </h2>
-        <p style={{ color: 'var(--bark-light)', fontSize: '0.95rem', lineHeight: 1.8, maxWidth: '620px', margin: '0 auto 2.5rem' }}>
+        <p style={{ color: 'var(--bark-light)', fontSize: '0.95rem', lineHeight: 1.8, maxWidth: '620px', margin: '0 auto 1.5rem' }}>
           Scott’s work, turned into things you can keep — postcards, prints, and posters.
           Daisy runs the register (she works for acorns).
         </p>
+
+        {!SHOP_LIVE && (
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap', justifyContent: 'center',
+            background: 'var(--warm-cream)', border: '1px solid #e0d8ca', borderRadius: '24px',
+            padding: '0.55rem 1.2rem', margin: '0 auto 2.5rem', fontSize: '0.85rem', color: 'var(--bark-light)'
+          }}>
+            <Acorn size={15} color="var(--clay)" />
+            The print shop opens soon — here’s a peek.
+            <a href="#commission" style={{ color: 'var(--clay)', fontWeight: 600 }}>Want a piece now? Commission Scott →</a>
+          </div>
+        )}
 
         {products === null ? (
           <p style={{ color: 'var(--stone)', fontStyle: 'italic' }}>Daisy is scampering to the shelves…</p>
@@ -99,9 +115,15 @@ export default function TradingPost() {
                   {p.blurb && <p style={{ fontSize: '0.78rem', color: 'var(--stone)', lineHeight: 1.5 }}>{p.blurb}</p>}
                   <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.7rem' }}>
                     <span style={{ fontSize: '1rem', color: 'var(--clay)', fontWeight: 600 }}>{money(p.price_cents)}</span>
-                    <button onClick={() => add(p)} style={addBtn}>
-                      <Acorn size={13} color="var(--parchment)" /> Add
-                    </button>
+                    {SHOP_LIVE ? (
+                      <button onClick={() => add(p)} style={addBtn}>
+                        <Acorn size={13} color="var(--parchment)" /> Add
+                      </button>
+                    ) : (
+                      <span style={{ fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--stone)', border: '1px solid #d4cdc0', borderRadius: '20px', padding: '0.3rem 0.7rem' }}>
+                        Soon
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -114,7 +136,7 @@ export default function TradingPost() {
       </div>
 
       {/* Floating cart button */}
-      {count > 0 && !open && (
+      {SHOP_LIVE && count > 0 && !open && (
         <button onClick={() => setOpen(true)} style={cartFab}>
           <Acorn size={18} color="var(--parchment)" />
           <span style={{ marginLeft: '0.4rem' }}>{count}</span>
@@ -122,7 +144,7 @@ export default function TradingPost() {
       )}
 
       {/* Cart drawer */}
-      {open && (
+      {SHOP_LIVE && open && (
         <CartDrawer
           cart={cart} setQty={setQty} money={money}
           subtotal={subtotal} discount={discount} total={total} couponOn={couponOn}
