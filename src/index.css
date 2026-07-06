@@ -11,6 +11,9 @@
   --stone: #8b8178;
   --shadow: rgba(61, 43, 31, 0.12);
   --shadow-deep: rgba(61, 43, 31, 0.25);
+
+  /* Daisy's acorn cursor (hotspot near the stem) */
+  --nut: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24'%3E%3Cpath d='M12 3.2V1.2' stroke='%233d2b1f' stroke-width='1.6' stroke-linecap='round'/%3E%3Cpath d='M5 9c0-4 3.6-6 7-6s7 2 7 6c0 1.1-.9 1.6-2 1.6H7C5.9 10.6 5 10.1 5 9Z' fill='%23a0522d'/%3E%3Cpath d='M6.6 10.6h10.8C17.4 17 14.5 21 12 21S6.6 17 6.6 10.6Z' fill='%23c67a4b'/%3E%3C/svg%3E") 13 3, auto;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -22,6 +25,10 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
 }
+
+/* Everything's a nut 🌰 (except where you type — keep the caret there) */
+html, body, body * { cursor: var(--nut) !important; }
+input, textarea, select, [contenteditable="true"] { cursor: text !important; }
 
 /* Subtle paper texture */
 body::before {
