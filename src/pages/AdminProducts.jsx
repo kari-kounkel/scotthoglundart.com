@@ -78,7 +78,7 @@ export default function AdminProducts({ artworks }) {
               {artworks.map(a => <option key={a.id} value={a.id}>{a.title}</option>)}
             </select>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem' }}>
             <div className="form-group">
               <label>Kind</label>
               <select value={kind} onChange={e => setKind(e.target.value)}>
@@ -107,7 +107,7 @@ export default function AdminProducts({ artworks }) {
             <p style={{ fontSize: '0.75rem', color: 'var(--stone)', marginBottom: '1rem', lineHeight: 1.5 }}>
               Paste the IDs from this item’s page in your Printify dashboard so paid orders auto-print & ship. Leave blank until Printify is set up.
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem' }}>
               <div className="form-group" style={{ marginBottom: 0 }}>
                 <label>Printify product ID</label>
                 <input value={pfProductId} onChange={e => setPfProductId(e.target.value)} placeholder="e.g. 5f5c…" />

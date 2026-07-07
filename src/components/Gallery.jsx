@@ -15,9 +15,17 @@ const SORTS = [
 
 export default function Gallery({ artworks, onSelect }) {
   const [sort, setSort] = useState('curated')
+  const [cat, setCat] = useState('all')
+
+  // Categories the gallery discovers on its own from whatever Scott tagged.
+  const categories = useMemo(
+    () => [...new Set((artworks || []).map(a => a.category).filter(Boolean))].sort(),
+    [artworks]
+  )
 
   const shown = useMemo(() => {
-    const list = [...(artworks || [])]
+    let list = [...(artworks || [])]
+    if (cat !== 'all') list = list.filter(a => a.category === cat)
     switch (sort) {
       case 'newest':
         return list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
@@ -28,7 +36,7 @@ export default function Gallery({ artworks, onSelect }) {
       default: // curated — as delivered (sort_order, then newest)
         return list
     }
-  }, [artworks, sort])
+  }, [artworks, sort, cat])
 
   if (!artworks || artworks.length === 0) {
     return (
@@ -64,6 +72,31 @@ export default function Gallery({ artworks, onSelect }) {
           )
         })}
       </div>
+
+      {/* Category filters — one appears automatically for each category Scott uses */}
+      {categories.length > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '0.4rem', margin: '-0.75rem 0 2rem' }}>
+          {['all', ...categories].map(c => {
+            const active = cat === c
+            return (
+              <button
+                key={c}
+                onClick={() => setCat(c)}
+                style={{
+                  background: active ? 'var(--clay)' : 'transparent',
+                  color: active ? 'var(--parchment)' : 'var(--stone)',
+                  border: `1px solid ${active ? 'var(--clay)' : '#d9d1c4'}`,
+                  borderRadius: '16px', padding: '0.28rem 0.85rem', cursor: 'pointer',
+                  fontFamily: "'Outfit', sans-serif", fontSize: '0.7rem', letterSpacing: '0.04em',
+                  transition: 'all 0.2s'
+                }}
+              >
+                {c === 'all' ? 'All' : c}
+              </button>
+            )
+          })}
+        </div>
+      )}
 
       {shown.length === 0 ? (
         <p style={{ textAlign: 'center', color: 'var(--stone)', fontStyle: 'italic', padding: '2rem' }}>

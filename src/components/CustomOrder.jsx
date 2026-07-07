@@ -88,11 +88,11 @@ export default function CustomOrder() {
               )}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
               <div className="form-group"><label>Name</label><input required value={f.name} onChange={set('name')} /></div>
               <div className="form-group"><label>Email</label><input type="email" required value={f.email} onChange={set('email')} /></div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
               <div className="form-group"><label>Phone (optional)</label><input value={f.phone} onChange={set('phone')} /></div>
               <div className="form-group">
                 <label>What kind of piece?</label>

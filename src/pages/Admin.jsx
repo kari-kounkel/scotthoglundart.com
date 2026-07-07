@@ -27,6 +27,7 @@ export default function Admin() {
   const [year, setYear] = useState('')
   const [price, setPrice] = useState('')
   const [description, setDescription] = useState('')
+  const [category, setCategory] = useState('')
   const [daisyNote, setDaisyNote] = useState('')
   const [isDaisyPick, setIsDaisyPick] = useState(false)
   const [isAdopted, setIsAdopted] = useState(false)
@@ -164,7 +165,7 @@ export default function Admin() {
       if (editingId) {
         // UPDATE existing
         const updates = {
-          title, medium, year, price, description,
+          title, medium, year, price, description, category: category.trim() || null,
           daisy_note: daisyNote, is_daisy_pick: isDaisyPick, is_adopted: isAdopted
         }
 
@@ -195,6 +196,7 @@ export default function Admin() {
           year,
           price,
           description,
+          category: category.trim() || null,
           daisy_note: daisyNote,
           is_daisy_pick: isDaisyPick,
           is_adopted: isAdopted,
@@ -222,6 +224,7 @@ export default function Admin() {
     setYear(art.year || '')
     setPrice(art.price || '')
     setDescription(art.description || '')
+    setCategory(art.category || '')
     setDaisyNote(art.daisy_note || '')
     setIsDaisyPick(!!art.is_daisy_pick)
     setIsAdopted(!!art.is_adopted)
@@ -303,6 +306,7 @@ export default function Admin() {
     setYear('')
     setPrice('')
     setDescription('')
+    setCategory('')
     setDaisyNote('')
     setIsDaisyPick(false)
     setIsAdopted(false)
@@ -679,7 +683,7 @@ export default function Admin() {
             <label>Medium</label>
             <input type="text" value={medium} onChange={e => setMedium(e.target.value)} placeholder="Oil on canvas, 24×36" />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem' }}>
             <div className="form-group">
               <label>Year</label>
               <input type="text" value={year} onChange={e => setYear(e.target.value)} placeholder="2025" />
@@ -692,6 +696,22 @@ export default function Admin() {
           <div className="form-group">
             <label>Description (optional)</label>
             <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="A few words about this piece..." />
+          </div>
+
+          <div className="form-group">
+            <label>Category</label>
+            <input
+              list="category-options"
+              value={category}
+              onChange={e => setCategory(e.target.value)}
+              placeholder="e.g. Wildlife, Pets, Portraits, Faith… (pick one or type a new one)"
+            />
+            <datalist id="category-options">
+              {[...new Set(artworks.map(a => a.category).filter(Boolean))].sort().map(c => <option key={c} value={c} />)}
+            </datalist>
+            <p style={{ fontSize: '0.72rem', color: 'var(--stone)', marginTop: '0.35rem' }}>
+              Type a new category or reuse one you’ve used before — the gallery makes a filter for each on its own.
+            </p>
           </div>
 
           {/* ─── Daisy's curation ─── */}
