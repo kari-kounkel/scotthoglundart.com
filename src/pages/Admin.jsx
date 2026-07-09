@@ -10,6 +10,7 @@ import Toast, { toast } from '../components/Toast'
 import AdminProducts from './AdminProducts'
 import AdminOrders from './AdminOrders'
 import AdminRequests from './AdminRequests'
+import AdminAgreement from './AdminAgreement'
 
 export default function Admin() {
   const navigate = useNavigate()
@@ -569,7 +570,7 @@ export default function Admin() {
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.75rem', flexWrap: 'wrap' }}>
-        {[['gallery', 'Gallery'], ['products', 'Trading Post'], ['requests', 'Requests'], ['orders', 'Orders']].map(([key, label]) => (
+        {[['gallery', 'Gallery'], ['products', 'Trading Post'], ['requests', 'Requests'], ['orders', 'Orders'], ['agreement', 'Agreement']].map(([key, label]) => (
           <button key={key} onClick={() => setTab(key)} style={{
             background: tab === key ? 'var(--bark)' : 'transparent',
             color: tab === key ? 'var(--parchment)' : 'var(--bark-light)',
@@ -584,6 +585,7 @@ export default function Admin() {
       {tab === 'products' && <AdminProducts artworks={artworks} />}
       {tab === 'requests' && <AdminRequests />}
       {tab === 'orders' && <AdminOrders />}
+      {tab === 'agreement' && <AdminAgreement />}
 
       {tab === 'gallery' && (<>
       {/* Upload / Edit Form */}
